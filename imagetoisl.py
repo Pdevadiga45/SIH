@@ -1,4 +1,3 @@
-
 import os
 import time
 import cv2
@@ -79,9 +78,18 @@ def process_text(text):
     for media in media_sequence:
         print(f"Displaying: {media}")  # Log the media being displayed
         display_video(media)  # Call function to play video
-        time.sleep(2)  # Add a delay of 2 seconds between displays
+        time.sleep(0.5)  # Add a delay of 2 seconds between displays
+
+def preprocess_image(image_path):
+    image = cv2.imread(image_path)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, binary_image = cv2.threshold(gray_image, 150, 255, cv2.THRESH_BINARY)
+    denoised_image = cv2.fastNlMeansDenoising(binary_image, None, 30, 7, 21)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    morphed_image = cv2.morphologyEx(denoised_image, cv2.MORPH_CLOSE, kernel)
+    return morphed_image
 
 # Example usage for image input
-image_input_path = "C:\\Users\\HP\\Downloads\\sign_text.png"
+image_input_path = "C:\\Users\\HP\\Downloads\\signtext.jpg"
 detected_text = detect_text(image_input_path)
 process_text(detected_text)
